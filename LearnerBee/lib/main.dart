@@ -15,21 +15,21 @@ class DrivingInstructorApp extends StatelessWidget {
       title: 'DriveMate',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Color(0xFF4A6FF3),
+        primaryColor: Color(0xFF8B6C42),
         colorScheme: ColorScheme.light(
-          primary: Color(0xFF4A6FF3),
-          secondary: Color(0xFF4A6FF3),
+          primary: Color(0xFF8B6C42),
+          secondary: Color(0xFF8B6C42),
         ),
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.white,
+          backgroundColor: Color(0xFFFFF8DC),
           foregroundColor: Colors.black87,
           elevation: 1,
         ),
-        scaffoldBackgroundColor: Color(0xFFF8F8F8),
+        scaffoldBackgroundColor: Color(0xFFFFF8DC),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Color(0xFF4A6FF3),
+            foregroundColor: Color(0xFFFFF8DC),
+            backgroundColor: Color(0xFF8B6C42),
           ),
         ),
       ),

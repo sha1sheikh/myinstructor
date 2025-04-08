@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
           // Hero section
           Container(
             padding: EdgeInsets.all(24),
-            color: Colors.grey[100],
+            color: Color(0xFFFFF8DC),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
