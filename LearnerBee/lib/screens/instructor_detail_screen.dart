@@ -1,92 +1,56 @@
 import 'package:flutter/material.dart';
-import '../models/instructor.dart';
-import '../services/instructor_service.dart';
 
-class InstructorDetailScreen extends StatefulWidget {
-  final String instructorId;
-  
-  InstructorDetailScreen({required this.instructorId});
-  
-  @override
-  _InstructorDetailScreenState createState() => _InstructorDetailScreenState();
-}
+class InstructorDetailScreen extends StatelessWidget {
+  final Map<String, dynamic> instructor;
 
-class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
-  late Instructor instructor;
-  late bool isFavorite;
-  
-  @override
-  void initState() {
-    super.initState();
-    instructor = InstructorService.getInstructorById(widget.instructorId);
-    isFavorite = instructor.isFavorite;
-  }
-  
+  InstructorDetailScreen({required this.instructor});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Instructor Profile'),
+        title: Text('Instructor Details'),
       ),
-      body: Column(
-        children: [
-          // Instructor profile header
-          Container(
-            padding: EdgeInsets.all(16),
-            color: Colors.white,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Instructor header with image and name
+            Row(
               children: [
-                // Profile image
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(40),
-                  child: Image.network(
-                    instructor.image,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
+                // Circular avatar (placeholder)
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Colors.grey[300],
+                  child: Icon(
+                    Icons.person,
+                    size: 60,
+                    color: Colors.grey[700],
                   ),
                 ),
-                SizedBox(width: 16),
-                
-                // Instructor info
+                SizedBox(width: 20),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        instructor.name,
+                        instructor['name'],
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        instructor.location,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      SizedBox(height: 4),
+                      SizedBox(height: 8),
                       Row(
                         children: [
+                          Icon(Icons.star, color: Colors.amber, size: 20),
+                          SizedBox(width: 4),
                           Text(
-                            instructor.rating.toString(),
+                            '${instructor['rating']} / 5.0',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(Icons.star, color: Colors.amber, size: 16),
-                          SizedBox(width: 4),
-                          Text(
-                            '(${instructor.reviewCount} reviews)',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
                             ),
                           ),
                         ],
@@ -94,151 +58,68 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
                     ],
                   ),
                 ),
-                
-                // Favorite button
-                IconButton(
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Theme.of(context).primaryColor : Colors.grey,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      InstructorService.toggleFavorite(instructor.id);
-                      isFavorite = !isFavorite;
-                    });
-                  },
-                ),
               ],
             ),
-          ),
-          
-          // About section
-          Expanded(
-            child: ListView(
-              children: [
-                // About section
-                _buildSection(
-                  title: 'About',
-                  child: Text(
-                    instructor.experience,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                      height: 1.5,
-                    ),
-                  ),
+            
+            SizedBox(height: 30),
+            
+            // Info card
+            Card(
+              elevation: 2,
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildInfoRow(Icons.auto_stories, 'Specialty', instructor['specialty']),
+                    Divider(),
+                    _buildInfoRow(Icons.history, 'Experience', instructor['experience']),
+                    Divider(),
+                    _buildInfoRow(Icons.location_on, 'Location', instructor['location']),
+                    Divider(),
+                    _buildInfoRow(Icons.attach_money, 'Rate', instructor['hourlyRate']),
+                    Divider(),
+                    _buildInfoRow(Icons.access_time, 'Availability', instructor['availability']),
+                  ],
                 ),
-                
-                // Lesson details section
-                _buildSection(
-                  title: 'Lesson Details',
-                  child: Column(
-                    children: [
-                      _buildDetailRow(Icons.access_time, '${instructor.duration} lessons'),
-                      SizedBox(height: 12),
-                      _buildDetailRow(Icons.credit_card, '\$${instructor.price.toInt()} per lesson'),
-                      SizedBox(height: 12),
-                      _buildDetailRow(Icons.location_on, 'Serves ${instructor.location} area'),
-                    ],
-                  ),
-                ),
-                
-                // Reviews section
-                _buildSection(
-                  title: 'Reviews',
-                  child: Column(
-                    children: [
-                      // Mock reviews - in a real app, these would come from a service
-                      _buildReview(
-                        name: 'John D.',
-                        rating: 5,
-                        comment: 'Amazing instructor! Very patient and great at explaining complex maneuvers. Helped me pass my test on the first try.',
-                      ),
-                      SizedBox(height: 16),
-                      _buildReview(
-                        name: 'Sarah T.',
-                        rating: 5,
-                        comment: 'Extremely professional and knowledgeable. Made me feel comfortable behind the wheel right from the start.',
-                      ),
-                    ],
-                  ),
-                ),
-                
-                // Add space for bottom bar
-                SizedBox(height: 80),
-              ],
+              ),
             ),
-          ),
-        ],
-      ),
-      
-      // Bottom bar with price and book button
-      bottomSheet: Container(
-        height: 80,
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 5,
-              offset: Offset(0, -1),
+            
+            SizedBox(height: 30),
+            
+            // About section
+            Text(
+              'About',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Price
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Price',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                Text(
-                  '\$${instructor.price.toInt()}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'per ${instructor.duration} lesson',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
+            SizedBox(height: 10),
+            Text(
+              instructor['about'] ?? 'Professional driving instructor with extensive experience helping students become confident, safe drivers. Specialized in ${instructor['specialty']}.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+              ),
             ),
-            SizedBox(width: 16),
+            
+            SizedBox(height: 40),
             
             // Book button
-            Expanded(
+            SizedBox(
+              width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // Book lesson functionality would go here
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Booking feature coming soon!')),
-                  );
+                  // Booking functionality would go here
+                  _showBookingDialog(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: Text(
-                  'Book Lesson',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  'Book a Lesson',
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
             ),
@@ -248,92 +129,61 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
     );
   }
   
-  Widget _buildSection({required String title, required Widget child}) {
-    return Container(
-      margin: EdgeInsets.only(top: 12),
-      padding: EdgeInsets.all(16),
-      color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 12),
-          child,
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildDetailRow(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          color: Colors.grey[600],
-          size: 20,
-        ),
-        SizedBox(width: 12),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
-        ),
-      ],
-    );
-  }
-  
-  Widget _buildReview({
-    required String name,
-    required int rating,
-    required String comment,
-  }) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey[300]!),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Icon(icon, color: Color(0xFF8B6C42)),
+          SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                name,
+                label,
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.grey[600],
                 ),
               ),
-              Row(
-                children: List.generate(5, (index) {
-                  return Icon(
-                    Icons.star,
-                    size: 14,
-                    color: index < rating ? Colors.amber : Colors.grey[300],
-                  );
-                }),
+              SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
-          SizedBox(height: 8),
-          Text(
-            comment,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-              height: 1.5,
-            ),
+        ],
+      ),
+    );
+  }
+  
+  void _showBookingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Book a Lesson'),
+        content: Text('This is a placeholder for the booking functionality.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Close'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Booking logic would go here
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Booking request sent!'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            child: Text('Confirm'),
           ),
         ],
       ),

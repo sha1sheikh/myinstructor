@@ -1,217 +1,198 @@
- import 'package:flutter/material.dart';
-import '../models/instructor.dart';
-import '../services/instructor_service.dart';
-import '../widgets/instructor_card.dart';
-import 'filter_screen.dart';
+import 'package:flutter/material.dart';
+import 'instructor_detail_screen.dart';
 
-class InstructorListScreen extends StatefulWidget {
-  @override
-  _InstructorListScreenState createState() => _InstructorListScreenState();
-}
+class InstructorListScreen extends StatelessWidget {
+  // Sample instructor data - this would ideally come from your API or database
+  final List<Map<String, dynamic>> instructors = [
+    {
+      'name': 'John Smith',
+      'specialty': 'Beginner drivers, anxiety management',
+      'experience': '15 years',
+      'location': 'Downtown',
+      'rating': 4.8,
+      'hourlyRate': '\$45',
+      'availability': 'Weekdays and Saturday mornings',
+    },
+    {
+      'name': 'Maria Garcia',
+      'specialty': 'Highway driving, defensive techniques',
+      'experience': '8 years',
+      'location': 'Westside',
+      'rating': 4.9,
+      'hourlyRate': '\$50',
+      'availability': 'Afternoons and weekends',
+    },
+    {
+      'name': 'David Chen',
+      'specialty': 'Manual transmission, advanced skills',
+      'experience': '12 years',
+      'location': 'Eastside',
+      'rating': 4.7,
+      'hourlyRate': '\$55',
+      'availability': 'Weekday evenings and Sundays',
+    },
+    {
+      'name': 'Sarah Johnson',
+      'specialty': 'Teen drivers, test preparation',
+      'experience': '6 years',
+      'location': 'Suburbs',
+      'rating': 4.6,
+      'hourlyRate': '\$40',
+      'availability': 'Flexible schedule',
+    },
+    {
+      'name': 'Ahmed Patel',
+      'specialty': 'Senior refresher courses, parallel parking',
+      'experience': '20 years',
+      'location': 'City center',
+      'rating': 5.0,
+      'hourlyRate': '\$60',
+      'availability': 'Mornings only',
+    },
+  ];
 
-class _InstructorListScreenState extends State<InstructorListScreen> {
-  List<Instructor> instructors = [];
-  String selectedLocation = 'All Locations';
-  Map<String, dynamic> filters = {};
-  
-  @override
-  void initState() {
-    super.initState();
-    _loadInstructors();
-  }
-  
-  void _loadInstructors() {
-    setState(() {
-      instructors = InstructorService.getInstructors(
-        location: selectedLocation != 'All Locations' ? selectedLocation : null,
-        minPrice: filters['minPrice'],
-        maxPrice: filters['maxPrice'],
-        minRating: filters['minRating'],
-        sortBy: filters['sortBy'],
-      );
-    });
-  }
+  InstructorListScreen();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Find Instructors'),
-      ),
-      body: Column(
-        children: [
-          // Instructor count header
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '${instructors.length} instructors',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+        title: Text('Available Instructors'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_list),
+            onPressed: () {
+              Navigator.pushNamed(context, '/filter');
+            },
           ),
-          
-          // Filter buttons
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Colors.grey[300]!),
+        ],
+      ),
+      body: ListView.builder(
+        itemCount: instructors.length,
+        itemBuilder: (context, index) {
+          final instructor = instructors[index];
+          return InstructorCard(instructor: instructor);
+        },
+      ),
+    );
+  }
+}
+
+class InstructorCard extends StatelessWidget {
+  final Map<String, dynamic> instructor;
+
+  InstructorCard({required this.instructor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => InstructorDetailScreen(
+                instructor: instructor,
               ),
             ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
+          );
+        },
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildFilterButton('Price', onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FilterScreen(
-                          activeTab: 'price',
-                          currentFilters: filters,
+                  // Instructor avatar placeholder
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.grey[300],
+                    child: Icon(
+                      Icons.person,
+                      size: 30,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          instructor['name'],
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    );
-                    
-                    if (result != null) {
-                      setState(() {
-                        filters = result;
-                        _loadInstructors();
-                      });
-                    }
-                  }),
-                  SizedBox(width: 8),
-                  _buildFilterButton('Rating', onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FilterScreen(
-                          activeTab: 'rating',
-                          currentFilters: filters,
+                        SizedBox(height: 4),
+                        Text(
+                          instructor['specialty'],
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
                         ),
-                      ),
-                    );
-                    
-                    if (result != null) {
-                      setState(() {
-                        filters = result;
-                        _loadInstructors();
-                      });
-                    }
-                  }),
-                  SizedBox(width: 8),
-                  _buildFilterButton('Location', isActive: true),
-                  SizedBox(width: 8),
-                  _buildFilterButton('Sort', icon: Icons.sort, onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FilterScreen(
-                          activeTab: 'sort',
-                          currentFilters: filters,
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(Icons.star, color: Colors.amber, size: 16),
+                            SizedBox(width: 4),
+                            Text(
+                              instructor['rating'].toString(),
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Spacer(),
+                            Text(
+                              instructor['hourlyRate'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              '/hour',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    );
-                    
-                    if (result != null) {
-                      setState(() {
-                        filters = result;
-                        _loadInstructors();
-                      });
-                    }
-                  }),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
+              SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
+                  SizedBox(width: 4),
+                  Text(
+                    instructor['location'],
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  SizedBox(width: 16),
+                  Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
+                  SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      instructor['availability'],
+                      style: TextStyle(color: Colors.grey[600]),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          
-          // Location filter
-          Container(
-            height: 50,
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              children: InstructorService.locations.map((location) {
-                return Padding(
-                  padding: EdgeInsets.only(right: 8),
-                  child: _buildLocationButton(location),
-                );
-              }).toList(),
-            ),
-          ),
-          
-          // Instructor list
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              itemCount: instructors.length,
-              itemBuilder: (context, index) {
-                return InstructorCard(instructor: instructors[index]);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFilterButton(String title, {
-    IconData? icon, 
-    bool isActive = false, 
-    VoidCallback? onPressed,
-  }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: isActive ? Colors.white : Colors.grey[700],
-        backgroundColor: isActive ? Theme.of(context).primaryColor : Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: isActive ? Colors.transparent : Colors.grey[300]!),
         ),
-        elevation: 0,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
-      child: Row(
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: 16),
-            SizedBox(width: 4),
-          ],
-          Text(title),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLocationButton(String location) {
-    final isSelected = selectedLocation == location;
-    
-    return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          selectedLocation = location;
-          _loadInstructors();
-        });
-      },
-      style: ElevatedButton.styleFrom(
-        foregroundColor: isSelected ? Colors.white : Colors.grey[700],
-        backgroundColor: isSelected ? Theme.of(context).primaryColor : Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: isSelected ? Colors.transparent : Colors.grey[300]!),
-        ),
-        elevation: 0,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      ),
-      child: Text(location),
     );
   }
 }
