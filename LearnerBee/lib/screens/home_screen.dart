@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'instructor_list_screen.dart';
+import 'progress_tracking.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -94,6 +95,23 @@ class HomeScreen extends StatelessWidget {
                   title: 'Rate & Review',
                   description: 'Share your experience with other learners',
                 ),
+
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProgressTrackingScreen()),
+                    );
+                  },
+                  child: _buildFeatureItem(
+                    context,
+                    icon: Icons.trending_up,
+                    title: 'Track Progress',
+                    description: 'Monitor your driving skills improvement and lesson history',
+                  ),
+                ),
+
+
               ],
             ),
           ),
@@ -122,6 +140,22 @@ class HomeScreen extends StatelessWidget {
         selectedItemColor: Theme.of(context).primaryColor,
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: true,
+        onTap: (index) {
+          // Add navigation to Progress Tracking through the bottom bar
+          if (index == 1) { // Search tab
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => InstructorListScreen()),
+            );
+          } else if (index == 3) { // Profile tab - we'll use this for progress tracking
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProgressTrackingScreen()),
+            );
+          }
+        },
+
+
       ),
     );
   }

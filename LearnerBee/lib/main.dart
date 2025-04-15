@@ -3,6 +3,8 @@ import 'screens/home_screen.dart';
 import 'screens/instructor_list_screen.dart';
 import 'screens/instructor_detail_screen.dart';
 import 'screens/filter_screen.dart';
+import 'screens/progress_tracking.dart';
+// import 'screens/chatbot.dart'; // Add this import
 
 void main() {
   runApp(DrivingInstructorApp());
@@ -12,7 +14,7 @@ class DrivingInstructorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'DriveMate',
+      title: 'LearnerBee',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Color(0xFF8B6C42),
@@ -34,6 +36,13 @@ class DrivingInstructorApp extends StatelessWidget {
         ),
       ),
       home: HomeScreen(),
+      routes: {
+        // '/chat': (context) => ChatScreen(),
+        '/instructors': (context) => InstructorListScreen(),
+       
+        '/filter': (context) => FilterScreen(currentFilters: {},),
+        '/progress_tracking': (context) => ProgressTrackingScreen()
+      },
     );
   }
 }

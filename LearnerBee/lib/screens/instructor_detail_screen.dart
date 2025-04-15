@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/instructor.dart';
 import '../services/instructor_service.dart';
+import 'payment_screen.dart';
 
 class InstructorDetailScreen extends StatefulWidget {
   final String instructorId;
@@ -222,10 +223,20 @@ class _InstructorDetailScreenState extends State<InstructorDetailScreen> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  // Book lesson functionality would go here
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Booking feature coming soon!')),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentScreen(
+                        instructor: instructor,
+                        lessonDuration: instructor.duration,
+                        price: instructor.price,
+                      ),
+                    ),
                   );
+                  // Book lesson functionality would go here
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   SnackBar(content: Text('Booking feature coming soon!')),
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 12),
